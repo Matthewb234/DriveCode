@@ -27,6 +27,7 @@ public class SimpleRobot extends IterativeRobot {
     private ApplyCutSpeedCommand applyCutSpeedCommand = new ApplyCutSpeedCommand();
     private ApplyAutoMoveCommand applyAutoMoveCommand = new ApplyAutoMoveCommand();
     private ApplyTickReverseCommand applyTickReverseCommand = new ApplyTickReverseCommand();
+    private ApplyAreButtonsPressedCommand applyAreButtonsPressedCommand = new ApplyAreButtonsPressedCommand();
 //    private ApplyCruiseOverrideCommand applyCruiseOverrideCommand = new ApplyCruiseOverrideCommand();
 
 

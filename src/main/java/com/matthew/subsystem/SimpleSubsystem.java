@@ -18,6 +18,7 @@ public class SimpleSubsystem extends Subsystem {
     private boolean cutSpeedActive = false;
     private boolean autoMoveActive = false;
     private boolean tickReverseActive = false;
+    private boolean areButtonsPressedActive = false;
     private double pastTime = System.currentTimeMillis();
     private boolean enabled = false;
     private double cruiseOutput;
@@ -46,6 +47,7 @@ public class SimpleSubsystem extends Subsystem {
         output = applyDeadzone(output);
         output = applyCutSpeed(output);
         output = applyAutoMove(output);
+        output = applyTickReverse(output);
 
         myTalon.set(ControlMode.PercentOutput, output * .3);
         theTalon.set(ControlMode.PercentOutput, output * .3);
@@ -188,6 +190,15 @@ public class SimpleSubsystem extends Subsystem {
         rTriggerPrev = rTrigger;
         return adjustedOutput;
     }
+    
+    private boolean areButtonsPressed() {
+        if(areButtonsPressedActive)
+        if (controller.getRawButton(1) || controller.getRawButton(2) || controller.getRawButton(3) ||
+                controller.getRawButton(4)) {
+            return true;
+        }
+        return false;
+    }
 
 
     public void setPulseActive(boolean pulseActive) {
@@ -219,6 +230,9 @@ public class SimpleSubsystem extends Subsystem {
 
     public void setTickReverseActive(boolean tickReverseActive){
         this.tickReverseActive = tickReverseActive;
+    }
+    public void setAreButtonsPressedActive(boolean areButtonsPressedActive){
+        this.areButtonsPressedActive = areButtonsPressedActive;
     }
 }
 
