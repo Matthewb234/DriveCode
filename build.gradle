@@ -16,7 +16,7 @@ sourceCompatibility = 1.8
 // Sets simulation mode using the test board robot class defined below
 
 // Constants
-def DEFAULT_ROBOT_CLASS = "com.matthew.SimpleRobot"
+def DEFAULT_ROBOT_CLASS = "com.matthew.robot.SimpleRobot"
 def SIMULATION_ROBOT_CLASS = "com.team2073.common.dev.simulation.RobotDelegatorSimulationImpl"
 def TEST_BOARD_ROBOT_CLASS = "com.team2073.common.dev.testboard.DevRobot"
 
