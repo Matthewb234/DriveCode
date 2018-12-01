@@ -160,7 +160,7 @@ public class SimpleSubsystem extends Subsystem {
     private double applyTickReverse(double currentOutput) {
         double adjustedOutput = currentOutput;
         int tickNumber = myTalon.getSelectedSensorPosition(0);
-        if (controller.getRawButton(7)) {
+        if (tickReverseActive) {
             tickSet = tickNumber;
         }
         boolean rTrigger = controller.getRawButton(6);
@@ -217,7 +217,7 @@ public class SimpleSubsystem extends Subsystem {
         this.autoMoveActive = autoMoveActive;
     }
 
-    public void setTickReverse(boolean tickReverseActive){
+    public void setTickReverseActive(boolean tickReverseActive){
         this.tickReverseActive = tickReverseActive;
     }
 }
