@@ -6,9 +6,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import javax.naming.ldap.Control;
+
 public class SimpleSubsystem extends Subsystem {
 
     private double output = 0;
+    private TalonSRX myTalon = new TalonSRX(4);
+    private TalonSRX theTalon = new TalonSRX(4);
+    private Joystick controller;
 
     private boolean pulseActive = false;
     private boolean reverseActive = false;
@@ -18,8 +23,7 @@ public class SimpleSubsystem extends Subsystem {
     private boolean cutSpeedActive = false;
     private boolean autoMoveActive = false;
     private boolean tickReverseActive = false;
-    private boolean areButtonsPressedActive = false;
-    private double pastTime = System.currentTimeMillis();
+    private double pastTime;
     private boolean enabled = false;
     private double cruiseOutput;
     private boolean cruiseControlEnabled = false;
@@ -27,11 +31,9 @@ public class SimpleSubsystem extends Subsystem {
     private boolean rTriggerPrev = false;
     private boolean tickReverse = true;
     private double tickSet;
-
-
-    private TalonSRX myTalon = new TalonSRX(1);
-    private TalonSRX theTalon = new TalonSRX(0);
-    private Joystick controller;
+    private int tickNumber;
+    private int ticks;
+    private boolean yButton;
 
     public SimpleSubsystem(Joystick controller) {
         this.controller = controller;
@@ -39,22 +41,49 @@ public class SimpleSubsystem extends Subsystem {
 
     @Override
     public void periodic() {
+//        if(controller.getRawButton(7)) {
+//            myTalon.set(ControlMode.PercentOutput, 0.3);
+//        }
         output = controller.getRawAxis(1);
-        output = applyPulse(output);
-        output = applyReverse(output);
-        output = applyCruise(output);
-        output = applyCruiseOverride(output);
-        output = applyDeadzone(output);
-        output = applyCutSpeed(output);
-        output = applyAutoMove(output);
-        output = applyTickReverse(output);
+        tickNumber = myTalon.getSelectedSensorPosition(4);
 
-        myTalon.set(ControlMode.PercentOutput, output * .3);
-        theTalon.set(ControlMode.PercentOutput, output * .3);
+        if(pulseActive)
+            output = applyPulse(output);
+        if(reverseActive)
+            output = applyReverse(output);
+        if(cruiseActive)
+            output = applyCruise(output);
+        if(cruiseOverrideActive)
+            output = applyCruiseOverride(output);
+        if(deadzoneActive)
+            output = applyDeadzone(output);
+        if(cutSpeedActive)
+            output = applyCutSpeed(output);
+        if(autoMoveActive)
+            output = applyAutoMove(output);
+        if(tickReverseActive)
+            output = applyTickReverse(output);
+        myTalon.set(ControlMode.PercentOutput, output);
+        theTalon.set(ControlMode.PercentOutput, output);
+        updateSmartDashboard();
 
+    }
+
+    private void updateSmartDashboard() {
+        SmartDashboard.putNumber("pov", controller.getPOV());
         SmartDashboard.putNumber("output", output);
         SmartDashboard.putNumber("pastTime", pastTime);
-
+        SmartDashboard.putNumber("cruiseOutput", cruiseOutput);
+        SmartDashboard.putBoolean("enabled", enabled);
+        SmartDashboard.putBoolean("cruiseControlEnabled", cruiseControlEnabled);
+        SmartDashboard.putBoolean("yButtonPrev", yButtonPrev);
+        SmartDashboard.putBoolean("yButton", yButton);
+//        SmartDashboard.putNumber("time", time);
+        SmartDashboard.putNumber("ticknumber",tickNumber);
+        SmartDashboard.putNumber("ticks", ticks);
+        SmartDashboard.putNumber("tickSet", tickSet);
+        SmartDashboard.putBoolean("deadzoneActive", deadzoneActive);
+        SmartDashboard.putBoolean("tickReverseActive", tickReverseActive);
     }
 
     @Override
@@ -66,7 +95,6 @@ public class SimpleSubsystem extends Subsystem {
     private double applyPulse(double currentOutput) {
         double time = System.currentTimeMillis();
         double adjustedOutput = currentOutput;
-        if (pulseActive) {
             if (time - pastTime > 1000) {
                 enabled = !enabled;// flip the value of enabled
                 // Set a new pastTime
@@ -77,29 +105,26 @@ public class SimpleSubsystem extends Subsystem {
             if (!enabled) {
                 adjustedOutput = 0;
             }
-        }
         return adjustedOutput;
     }
 
     private double applyReverse(double currentOutput) {
         double adjustedOutput = currentOutput;
-        if (reverseActive) {
             adjustedOutput = -adjustedOutput;
-        }
         return adjustedOutput;
     }
 
     private double applyCruise(double currentOutput) {
         double adjustedOutput = currentOutput;
-        if (cruiseActive && !yButtonPrev) {
+        if (yButton && !yButtonPrev) {
             System.out.println("Y button pressed");
             cruiseOutput = adjustedOutput;
-            if (cruiseControlEnabled == true)
+            if (cruiseControlEnabled)
                 cruiseControlEnabled = false;
             else {
                 cruiseControlEnabled = true;
             }
-        } else if (!cruiseActive && yButtonPrev) {
+        } else if (cruiseActive && !yButton && yButtonPrev) {
             System.out.println("Y button released");
         }
 
@@ -113,7 +138,7 @@ public class SimpleSubsystem extends Subsystem {
     private double applyCruiseOverride(double currentOutput) {
         double adjustedOutput = currentOutput;
         double controllerOutput = controller.getRawAxis(1);
-        if(cruiseOverrideActive) {
+
             if (cruiseControlEnabled == true && Math.abs(cruiseOutput) < Math.abs(controllerOutput)) {
                 if (Math.abs(cruiseOutput) < .01) {
                     cruiseControlEnabled = false;
@@ -121,7 +146,6 @@ public class SimpleSubsystem extends Subsystem {
                     adjustedOutput = controllerOutput;
                 else if (cruiseOutput < 0 && cruiseOutput > controllerOutput)
                     adjustedOutput = controllerOutput;
-            }
         }
         return adjustedOutput;
 
@@ -129,24 +153,19 @@ public class SimpleSubsystem extends Subsystem {
 
     private double applyDeadzone(double currentOutput) {
         double adjustedOutput = currentOutput;
-        if (deadzoneActive) {
-            if (adjustedOutput < .05 && adjustedOutput > 0 || adjustedOutput > -.05 && adjustedOutput < 0) {
+            if (adjustedOutput < .25 && adjustedOutput > 0 || adjustedOutput > -.25 && adjustedOutput < 0) {
                 adjustedOutput = 0;
             }
-        }
         return adjustedOutput;
     }
     private double applyCutSpeed(double currentOutput) {
         double adjustedOutput = currentOutput;
-        if (cutSpeedActive) {
             adjustedOutput /= 2;
-        }
         return adjustedOutput;
     }
 
     private double applyAutoMove(double currentOutput) {
         double adjustedOutput = currentOutput;
-        int tickNumber = myTalon.getSelectedSensorPosition(0);
         if (autoMoveActive) {
             autoMoveActive = true;
         }
@@ -161,10 +180,8 @@ public class SimpleSubsystem extends Subsystem {
 
     private double applyTickReverse(double currentOutput) {
         double adjustedOutput = currentOutput;
-        int tickNumber = myTalon.getSelectedSensorPosition(0);
-        if (tickReverseActive) {
             tickSet = tickNumber;
-        }
+        System.out.println(tickNumber);
         boolean rTrigger = controller.getRawButton(6);
         if (rTrigger && !rTriggerPrev) {
             if (tickReverse == true)
@@ -173,7 +190,7 @@ public class SimpleSubsystem extends Subsystem {
                 tickReverse = true;
             if (tickReverse == true) {
                 myTalon.setSelectedSensorPosition(0, 0, 0);
-                theTalon.setSelectedSensorPosition(0, 0, 0);
+//                theTalon.setSelectedSensorPosition(0, 0, 0);
             }
         }
         if (adjustedOutput == 0 && !areButtonsPressed() && tickReverse) {
@@ -190,9 +207,28 @@ public class SimpleSubsystem extends Subsystem {
         rTriggerPrev = rTrigger;
         return adjustedOutput;
     }
-    
+
+    private double applyVariablyIncrease(double currentOutput) {
+        double adjustedOutput = currentOutput;
+        if (currentOutput > 0) {
+            adjustedOutput = currentOutput + controller.getRawAxis(3);
+        } else {
+            adjustedOutput = currentOutput - controller.getRawAxis(3);
+        }
+        return adjustedOutput;
+    }
+
+    private double applyVariablyDecrease (double currentOutput) {
+        double adjustedOutput = currentOutput;
+        if (currentOutput < 0) {
+            adjustedOutput = currentOutput + controller.getRawAxis(2);
+        } else {
+            adjustedOutput = currentOutput - controller.getRawAxis(2);
+        }
+        return adjustedOutput;
+    }
+
     private boolean areButtonsPressed() {
-        if(areButtonsPressedActive)
         if (controller.getRawButton(1) || controller.getRawButton(2) || controller.getRawButton(3) ||
                 controller.getRawButton(4)) {
             return true;
@@ -230,9 +266,6 @@ public class SimpleSubsystem extends Subsystem {
 
     public void setTickReverseActive(boolean tickReverseActive){
         this.tickReverseActive = tickReverseActive;
-    }
-    public void setAreButtonsPressedActive(boolean areButtonsPressedActive){
-        this.areButtonsPressedActive = areButtonsPressedActive;
     }
 }
 

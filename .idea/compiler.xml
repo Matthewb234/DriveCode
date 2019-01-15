@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="simple_main" target="1.8" />
-      <module name="simple_test" target="1.8" />
+      <module name="simple-subsystem_main" target="1.8" />
+      <module name="simple-subsystem_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

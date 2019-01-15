@@ -3,7 +3,7 @@ package com.matthew.command;
 import com.matthew.robot.SimpleRobot;
 import edu.wpi.first.wpilibj.command.Command;
 
-public class ApplyPulseCommand extends Command {
+public class PulseCommand extends Command {
 
     @Override
     protected boolean isFinished() {
