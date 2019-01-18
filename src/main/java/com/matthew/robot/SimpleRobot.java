@@ -41,11 +41,11 @@ public class SimpleRobot extends IterativeRobot {
 //        x.whileHeld(simpleCommand);
         x.whileHeld(pulseCommand);
         a.whileHeld(reverseCommand);
-        y.whenPressed(cruiseCommand);
+        y.toggleWhenPressed(cruiseCommand);
         b.whileHeld(cutSpeedCommand);
         up.whileHeld(deadzoneCommand);
-        down.whileHeld(cruiseOverrideCommand);
-        left.whileHeld(tickReverseCommand);
+        down.toggleWhenPressed(cruiseOverrideCommand);
+        left.toggleWhenPressed(tickReverseCommand);
         right.whileHeld(autoMoveCommand);
 
     }
