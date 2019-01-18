@@ -235,9 +235,7 @@ public class SimpleSubsystem extends Subsystem {
     private double applyVariablyDecrease(double currentOutput) {
         double adjustedOutput = currentOutput;
         if (currentOutput < 0) {
-            adjustedOutput = currentOutput + controller.getRawAxis(2);
-        } else {
-            adjustedOutput = currentOutput - controller.getRawAxis(2);
+            adjustedOutput = currentOutput * controller.getRawAxis(2);
         }
         return adjustedOutput;
     }
