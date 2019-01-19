@@ -36,6 +36,8 @@ public class SimpleSubsystem extends Subsystem {
     private boolean lTrigger;
     private double differnce;
     private double finalDifference;
+    private  double negative;
+    private  double positive;
 
     public SimpleSubsystem(Joystick controller) {
         this.controller = controller;
@@ -52,9 +54,9 @@ public class SimpleSubsystem extends Subsystem {
         differnce = tickNumber - tickSet;
         finalDifference = differnce / 75000;
         lTrigger = controller.getRawButton(5);
-        if(controller.getRawAxis(1) <= .02 && controller.getRawAxis(1) >= -.02) {
-           output = 0;
-        }
+//        if(controller.getRawAxis(1) <= .02 && controller.getRawAxis(1) >= -.02) {
+//           output = 0;
+//        }
 
 
         if (pulseActive)
@@ -246,12 +248,13 @@ public class SimpleSubsystem extends Subsystem {
 
     private double applyVariablyDecrease(double currentOutput) {
         double adjustedOutput = currentOutput;
-        adjustedOutput = currentOutput * controller.getRawAxis(2);
-//        if (currentOutput < 0) {
-//            adjustedOutput = currentOutput + controller.getRawAxis(2);
-//        } else {
-//            adjustedOutput = currentOutput - controller.getRawAxis(2);
-//        }
+        negative = currentOutput + controller.getRawAxis(2);
+        positive = currentOutput - controller.getRawAxis(2);
+        if (currentOutput < 0) {
+            adjustedOutput = currentOutput + negative;
+        } else {
+            adjustedOutput = currentOutput - positive;
+        }
         return adjustedOutput;
     }
 
@@ -263,7 +266,6 @@ public class SimpleSubsystem extends Subsystem {
         return controller.getRawButton(1) || controller.getRawButton(2) || controller.getRawButton(3) ||
                 controller.getRawButton(4);
     }
-
 
     public void setPulseActive(boolean pulseActive) {
         this.pulseActive = pulseActive;
@@ -297,7 +299,6 @@ public class SimpleSubsystem extends Subsystem {
     public void setTickReverseActive(boolean tickReverseActive) {
         this.tickReverseActive = tickReverseActive;
     }
-
 
     public void resetTickNumber() {
         this.tickSet = tickNumber;
