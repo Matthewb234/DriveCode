@@ -139,15 +139,16 @@ public class SimpleSubsystem extends Subsystem {
     private double applyCruise(double currentOutput) {
         double adjustedOutput = currentOutput;
         if (lTrigger && !lTriggerPrev) {
+            cruiseControlEnabled = true;
 //            System.out.println("Y button released");
 //            cruiseControlEnabled = true;
 //            lTriggerPrev = true;
 ////            cruiseOutput = adjustedOutput;
-            if (cruiseControlEnabled)
-                cruiseControlEnabled = false;
-            else {
-                cruiseControlEnabled = true;
-            }
+//            if (cruiseControlEnabled)
+//                cruiseControlEnabled = false;
+//            else {
+//                cruiseControlEnabled = true;
+//            }
         }
 
 
@@ -161,6 +162,7 @@ public class SimpleSubsystem extends Subsystem {
 
         if (cruiseControlEnabled) {
             adjustedOutput = cruiseOutput;
+            cruiseControlEnabled = false;
         }
         return adjustedOutput;
 
