@@ -52,9 +52,9 @@ public class SimpleSubsystem extends Subsystem {
         differnce = tickNumber - tickSet;
         finalDifference = differnce / 75000;
         lTrigger = controller.getRawButton(5);
-//        if(controller.getRawAxis(1) <= .02 || controller.getRawAxis(1) >= -.02) {
-//           output = 0;
-//        }
+        if(controller.getRawAxis(1) <= .02 && controller.getRawAxis(1) >= -.02) {
+           output = 0;
+        }
 
 
         if (pulseActive)
