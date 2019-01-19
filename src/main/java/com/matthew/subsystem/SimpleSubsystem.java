@@ -27,13 +27,13 @@ public class SimpleSubsystem extends Subsystem {
     private boolean enabled = false;
     private double cruiseOutput;
     private boolean cruiseControlEnabled = false;
-    private boolean yButtonPrev = false;
+    private boolean lTriggerPrev = false;
     private boolean rTriggerPrev = false;
     private boolean tickReverse = true;
     private double tickSet;
     private int tickNumber;
     private int ticks;
-    private boolean yButton;
+    private boolean lTrigger;
     private double differnce;
     private double finalDifference;
 
@@ -51,18 +51,22 @@ public class SimpleSubsystem extends Subsystem {
         tickNumber = myTalon.getSelectedSensorPosition(4);
         differnce = tickNumber - tickSet;
         finalDifference = differnce / 75000;
-        yButton = controller.getRawButton(4);
-        if(controller.getRawAxis(1) <= .02 || controller.getRawAxis(1) >= -.02) {
-            output = 0;
-        }
+        lTrigger = controller.getRawButton(5);
+//        if(controller.getRawAxis(1) <= .02 || controller.getRawAxis(1) >= -.02) {
+//           output = 0;
+//        }
 
 
         if (pulseActive)
             output = applyPulse(output);
         if (reverseActive)
             output = applyReverse(output);
-//        if (cruiseActive)
+        if (cruiseActive) {
+            if(controller.getRawButton(4)) {
+                cruiseOutput = output;
+            }
             output = applyCruise(output);
+        }
         if (cruiseOverrideActive)
             output = applyCruiseOverride(output);
         if (deadzoneActive)
@@ -88,8 +92,8 @@ public class SimpleSubsystem extends Subsystem {
         SmartDashboard.putNumber("cruiseOutput", cruiseOutput);
         SmartDashboard.putBoolean("enabled", enabled);
         SmartDashboard.putBoolean("cruiseControlEnabled", cruiseControlEnabled);
-        SmartDashboard.putBoolean("yButtonPrev", yButtonPrev);
-        SmartDashboard.putBoolean("yButton", yButton);
+        SmartDashboard.putBoolean("lTriggerPrev", lTriggerPrev);
+        SmartDashboard.putBoolean("lTrigger", lTrigger);
 //        SmartDashboard.putNumber("time", time);
         SmartDashboard.putNumber("ticknumber", tickNumber);
         SmartDashboard.putNumber("ticks", ticks);
@@ -132,18 +136,26 @@ public class SimpleSubsystem extends Subsystem {
 
     private double applyCruise(double currentOutput) {
         double adjustedOutput = currentOutput;
-        if (yButton && !yButtonPrev) {
-            System.out.println("Y button pressed");
-//            cruiseOutput = adjustedOutput;
+        if (lTrigger && !lTriggerPrev) {
+//            System.out.println("Y button released");
+//            cruiseControlEnabled = true;
+//            lTriggerPrev = true;
+////            cruiseOutput = adjustedOutput;
             if (cruiseControlEnabled)
                 cruiseControlEnabled = false;
             else {
                 cruiseControlEnabled = true;
             }
-            if (!yButton && yButtonPrev) {
-                System.out.println("Y button released");
-            }
         }
+
+
+
+        if (lTrigger && lTriggerPrev) {
+            System.out.println("Y button released");
+//            cruiseControlEnabled = false;
+//            lTriggerPrev = false;
+        }
+
 
         if (cruiseControlEnabled) {
             adjustedOutput = cruiseOutput;
@@ -235,7 +247,9 @@ public class SimpleSubsystem extends Subsystem {
     private double applyVariablyDecrease(double currentOutput) {
         double adjustedOutput = currentOutput;
         if (currentOutput < 0) {
-            adjustedOutput = currentOutput * controller.getRawAxis(2);
+            adjustedOutput = currentOutput + controller.getRawAxis(2);
+        } else {
+            adjustedOutput = currentOutput - controller.getRawAxis(2);
         }
         return adjustedOutput;
     }
@@ -260,7 +274,7 @@ public class SimpleSubsystem extends Subsystem {
 
     public void setCruiseActive(boolean cruiseActive) {
         this.cruiseActive = cruiseActive;
-        cruiseOutput = output;
+
     }
 
     public void setCruiseOverrideActive(boolean cruiseOverrideActive) {
