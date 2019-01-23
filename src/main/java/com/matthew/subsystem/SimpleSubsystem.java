@@ -36,8 +36,8 @@ public class SimpleSubsystem extends Subsystem {
     private boolean lTrigger;
     private double differnce;
     private double finalDifference;
-    private  double negative;
-    private  double positive;
+    private boolean isItOrIsItNot;
+    private boolean previousIsItOrIsItNot;
 
     public SimpleSubsystem(Joystick controller) {
         this.controller = controller;
@@ -54,8 +54,24 @@ public class SimpleSubsystem extends Subsystem {
         differnce = tickNumber - tickSet;
         finalDifference = differnce / 75000;
         lTrigger = controller.getRawButton(5);
+        myTalon.getMotorOutputPercent();
+        if(output >= 0){
+            isItOrIsItNot = true;
+        }else if(output < 0){
+            isItOrIsItNot = false;
+        }
+        if(isItOrIsItNot != previousIsItOrIsItNot){
+            output = output/5;
+            previousIsItOrIsItNot = isItOrIsItNot;
+        }
+
+
+
 //        if(controller.getRawAxis(1) <= .02 && controller.getRawAxis(1) >= -.02) {
 //           output = 0;
+//        }
+//        if(){
+//
 //        }
 
 
@@ -84,7 +100,6 @@ public class SimpleSubsystem extends Subsystem {
         myTalon.set(ControlMode.PercentOutput, output);
         theTalon.set(ControlMode.PercentOutput, output);
         updateSmartDashboard();
-
     }
 
     private void updateSmartDashboard() {
@@ -139,16 +154,15 @@ public class SimpleSubsystem extends Subsystem {
     private double applyCruise(double currentOutput) {
         double adjustedOutput = currentOutput;
         if (lTrigger && !lTriggerPrev) {
-            cruiseControlEnabled = true;
 //            System.out.println("Y button released");
 //            cruiseControlEnabled = true;
 //            lTriggerPrev = true;
 ////            cruiseOutput = adjustedOutput;
-//            if (cruiseControlEnabled)
-//                cruiseControlEnabled = false;
-//            else {
-//                cruiseControlEnabled = true;
-//            }
+            if (cruiseControlEnabled)
+                cruiseControlEnabled = false;
+            else {
+                cruiseControlEnabled = true;
+            }
         }
 
 
@@ -162,7 +176,6 @@ public class SimpleSubsystem extends Subsystem {
 
         if (cruiseControlEnabled) {
             adjustedOutput = cruiseOutput;
-            cruiseControlEnabled = false;
         }
         return adjustedOutput;
 
@@ -250,12 +263,10 @@ public class SimpleSubsystem extends Subsystem {
 
     private double applyVariablyDecrease(double currentOutput) {
         double adjustedOutput = currentOutput;
-        negative = currentOutput + controller.getRawAxis(2);
-        positive = currentOutput - controller.getRawAxis(2);
         if (currentOutput < 0) {
-            adjustedOutput = currentOutput + negative;
+            adjustedOutput = currentOutput - controller.getRawAxis(2);
         } else {
-            adjustedOutput = currentOutput - positive;
+            adjustedOutput = currentOutput + controller.getRawAxis(2);
         }
         return adjustedOutput;
     }
