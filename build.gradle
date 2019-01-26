@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "idea"
-    id "edu.wpi.first.GradleRIO" version "2019.1.1"
+    id "edu.wpi.first.GradleRIO" version "2019.2.1"
 }
 
 group 'com.matthew'
@@ -14,9 +14,9 @@ repositories {
 }
 
 def ROBOT_MAIN_CLASS = "com.matthew.robot.Main"
-def TEAM_NUMBER = 9073
+def TEAM_NUMBER = 8073
 def DEBUG_MODE = false
-def IP_ADDRESS = "10.90.73.2"
+def IP_ADDRESS = "10.80.73.2"
 def ROBOT_CLASS = "com.matthew.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)

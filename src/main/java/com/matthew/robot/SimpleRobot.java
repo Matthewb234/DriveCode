@@ -2,6 +2,9 @@ package com.matthew.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.matthew.command.*;
+import com.matthew.driveCodes.MatthewDrive;
+import com.matthew.driveCodes.TankDrive;
+import com.matthew.driveCodes.TurnAndThrottleDrive;
 import com.matthew.subsystem.SimpleSubsystem;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,7 +16,7 @@ public class SimpleRobot extends IterativeRobot {
 
 
 
-    private static Joystick controller = new Joystick(1);
+    private static Joystick controller = new Joystick(3);
     private static SimpleSubsystem simpleSubsystem = new SimpleSubsystem(controller);
     private JoystickButton x = new JoystickButton(controller, 1);
     private JoystickButton a = new JoystickButton(controller, 2);
@@ -23,6 +26,8 @@ public class SimpleRobot extends IterativeRobot {
     private POVButton down = new POVButton(controller, 180);
     private POVButton left = new POVButton(controller, 270);
     private POVButton right = new POVButton(controller, 90);
+    private JoystickButton rectangle = new JoystickButton(controller, 7);
+    private JoystickButton platButton = new JoystickButton(controller,8);
 //    private JoystickButton rT = new Joystick(controller,);
 //    private Joystick trigger = new Joystick trigger(controller,4)
 
@@ -35,6 +40,9 @@ public class SimpleRobot extends IterativeRobot {
     private AutoMoveCommand autoMoveCommand = new AutoMoveCommand();
     private TickReverseCommand tickReverseCommand = new TickReverseCommand();
     private CruiseOverrideCommand cruiseOverrideCommand = new CruiseOverrideCommand();
+    private MatthewDrive matthewDrive = new MatthewDrive();
+    private TankDrive tankDrive = new TankDrive();
+    private TurnAndThrottleDrive turnAndThrottleDrive = new TurnAndThrottleDrive();
 
     @Override
     public void robotInit() {
@@ -47,12 +55,19 @@ public class SimpleRobot extends IterativeRobot {
         down.toggleWhenPressed(cruiseOverrideCommand);
         left.toggleWhenPressed(tickReverseCommand);
         right.whileHeld(autoMoveCommand);
+//        rectangle.toggleWhenPressed;
+
+
 
     }
     @Override
     public void robotPeriodic() {
         super.robotPeriodic();
         Scheduler.getInstance().run();
+        turnAndThrottleDrive.tTPeriodic();
+//        matthewDrive.Periodic();
+//        tankDrive.TankPeriodic();
+
     }
 
     public static SimpleSubsystem getSimpleSubsystem() {

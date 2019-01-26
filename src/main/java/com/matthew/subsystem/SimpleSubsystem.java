@@ -11,8 +11,8 @@ import javax.naming.ldap.Control;
 public class SimpleSubsystem extends Subsystem {
 
     private double output = 0;
-    private TalonSRX myTalon = new TalonSRX(4);
-    private TalonSRX theTalon = new TalonSRX(4);
+    private TalonSRX myTalon = new TalonSRX(0);
+    private TalonSRX theTalon = new TalonSRX(0);
     private Joystick controller;
 
     private boolean pulseActive = false;
@@ -24,7 +24,10 @@ public class SimpleSubsystem extends Subsystem {
     private boolean autoMoveActive = false;
     private boolean tickReverseActive = false;
     private double pastTime;
+    private double pastTime1;
+    private double time1;
     private boolean enabled = false;
+    private boolean hiEnabled = false;
     private double cruiseOutput;
     private boolean cruiseControlEnabled = false;
     private boolean lTriggerPrev = false;
@@ -54,33 +57,15 @@ public class SimpleSubsystem extends Subsystem {
         differnce = tickNumber - tickSet;
         finalDifference = differnce / 75000;
         lTrigger = controller.getRawButton(5);
-        myTalon.getMotorOutputPercent();
-        if(output >= 0){
-            isItOrIsItNot = true;
-        }else if(output < 0){
-            isItOrIsItNot = false;
+        if(output >= -.1 && output <= .1){
+            output /= 5;
         }
-        if(isItOrIsItNot != previousIsItOrIsItNot){
-            output = output/5;
-            previousIsItOrIsItNot = isItOrIsItNot;
-        }
-
-
-
-//        if(controller.getRawAxis(1) <= .02 && controller.getRawAxis(1) >= -.02) {
-//           output = 0;
-//        }
-//        if(){
-//
-//        }
-
-
         if (pulseActive)
             output = applyPulse(output);
         if (reverseActive)
             output = applyReverse(output);
         if (cruiseActive) {
-            if(controller.getRawButton(4)) {
+            if (controller.getRawButton(4)) {
                 cruiseOutput = output;
             }
             output = applyCruise(output);
@@ -154,10 +139,6 @@ public class SimpleSubsystem extends Subsystem {
     private double applyCruise(double currentOutput) {
         double adjustedOutput = currentOutput;
         if (lTrigger && !lTriggerPrev) {
-//            System.out.println("Y button released");
-//            cruiseControlEnabled = true;
-//            lTriggerPrev = true;
-////            cruiseOutput = adjustedOutput;
             if (cruiseControlEnabled)
                 cruiseControlEnabled = false;
             else {
@@ -166,11 +147,8 @@ public class SimpleSubsystem extends Subsystem {
         }
 
 
-
         if (lTrigger && lTriggerPrev) {
             System.out.println("Y button released");
-//            cruiseControlEnabled = false;
-//            lTriggerPrev = false;
         }
 
 
