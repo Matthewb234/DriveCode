@@ -9,7 +9,7 @@ import com.matthew.subsystem.SimpleSubsystem;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.buttons.POVButton;
+//import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 public class SimpleRobot extends IterativeRobot {
@@ -22,14 +22,12 @@ public class SimpleRobot extends IterativeRobot {
     private JoystickButton a = new JoystickButton(controller, 2);
     private JoystickButton y = new JoystickButton(controller, 4);
     private JoystickButton b = new JoystickButton(controller, 3);
-    private POVButton up = new POVButton(controller,0);
-    private POVButton down = new POVButton(controller, 180);
-    private POVButton left = new POVButton(controller, 270);
-    private POVButton right = new POVButton(controller, 90);
+//    private POVButton up = new POVButton(controller,0);
+//    private POVButton down = new POVButton(controller, 180);
+//    private POVButton left = new POVButton(controller, 270);
+//    private POVButton right = new POVButton(controller, 90);
     private JoystickButton rectangle = new JoystickButton(controller, 7);
     private JoystickButton platButton = new JoystickButton(controller,8);
-//    private JoystickButton rT = new Joystick(controller,);
-//    private Joystick trigger = new Joystick trigger(controller,4)
 
 //    private SimpleCommand simpleCommand = new SimpleCommand();
     private PulseCommand pulseCommand = new PulseCommand();
@@ -51,10 +49,10 @@ public class SimpleRobot extends IterativeRobot {
         a.whileHeld(reverseCommand);
         y.toggleWhenPressed(cruiseCommand);
         b.whileHeld(cutSpeedCommand);
-        up.whileHeld(deadzoneCommand);
-        down.toggleWhenPressed(cruiseOverrideCommand);
-        left.toggleWhenPressed(tickReverseCommand);
-        right.whileHeld(autoMoveCommand);
+//        up.whileHeld(deadzoneCommand);
+//        down.toggleWhenPressed(cruiseOverrideCommand);
+//        left.toggleWhenPressed(tickReverseCommand);
+//        right.whileHeld(autoMoveCommand);
 //        rectangle.toggleWhenPressed;
 
 
@@ -64,7 +62,7 @@ public class SimpleRobot extends IterativeRobot {
     public void robotPeriodic() {
         super.robotPeriodic();
         Scheduler.getInstance().run();
-        turnAndThrottleDrive.tTPeriodic();
+//        turnAndThrottleDrive.tTPeriodic();
 //        matthewDrive.Periodic();
 //        tankDrive.TankPeriodic();
 

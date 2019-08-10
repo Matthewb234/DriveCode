@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import javax.naming.ldap.Control;
-
 public class SimpleSubsystem extends Subsystem {
 
     private double output = 0;
@@ -49,15 +47,12 @@ public class SimpleSubsystem extends Subsystem {
 
     @Override
     public void periodic() {
-//        if(controller.getRawButton(7)) {
-//            myTalon.set(ControlMode.PercentOutput, 0.3);
-//        }
         output = controller.getRawAxis(1);
         tickNumber = myTalon.getSelectedSensorPosition(4);
         differnce = tickNumber - tickSet;
         finalDifference = differnce / 75000;
         lTrigger = controller.getRawButton(5);
-        if(output >= -.1 && output <= .1){
+        if (output >= -.1 && output <= .1) {
             output /= 5;
         }
         if (pulseActive)
@@ -163,7 +158,7 @@ public class SimpleSubsystem extends Subsystem {
         double adjustedOutput = currentOutput;
         double controllerOutput = controller.getRawAxis(1);
 
-        if (cruiseControlEnabled == true && Math.abs(cruiseOutput) < Math.abs(controllerOutput)) {
+        if (cruiseControlEnabled && Math.abs(cruiseOutput) < Math.abs(controllerOutput)) {
             if (Math.abs(cruiseOutput) < .01) {
                 cruiseControlEnabled = false;
             } else if (cruiseOutput > 0 && cruiseOutput < controllerOutput)
@@ -214,7 +209,7 @@ public class SimpleSubsystem extends Subsystem {
 //                System.out.println("Three");
 //                adjustedOutput = -.1;
 //            } else if (tickNumber > 1000 + tickSet) {
-//                System.out.println("Four");
+//                System.out.println("Four");a
 //                adjustedOutput = .1;
 //            }
 
